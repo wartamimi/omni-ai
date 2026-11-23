@@ -33,15 +33,15 @@ jobs:
       - name: Build debug APK
         run: ./gradlew --continue assembleDebug
 
-      - name: Unit tests (Android modules)
-        run: ./gradlew --stacktrace testDebugUnitTest
-
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
           name: omniai-debug-apk
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+
+      - name: Unit tests (Android modules)
+        run: ./gradlew --continue testDebugUnitTest
 
       - name: Upload test reports
         if: failure()
