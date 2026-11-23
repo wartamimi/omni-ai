@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  TLS is always validated against the system trust store; user-installed CAs are not trusted.
+  Cleartext HTTP is permitted at the platform level only so that local model servers
+  (Ollama, LM Studio, llama.cpp on your LAN) can be reached. The app itself rejects http://
+  for every non-local host and only allows it for private/loopback addresses when the user
+  turns on "Allow HTTP for local endpoints" (see EndpointValidator and SafeDns).
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
