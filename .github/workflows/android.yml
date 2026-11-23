@@ -31,7 +31,7 @@ jobs:
         run: ./gradlew --stacktrace :core:model:test :core:common:test :core:provider:test :core:domain:test
 
       - name: Build debug APK
-        run: ./gradlew --stacktrace assembleDebug
+        run: ./gradlew --continue assembleDebug
 
       - name: Unit tests (Android modules)
         run: ./gradlew --stacktrace testDebugUnitTest

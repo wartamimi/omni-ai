@@ -330,14 +330,15 @@ private fun MessageItem(
                             m.attachments.forEach { a -> AttachmentChip(a, onClick = { onInspect(a) }) }
                         }
                     }
-                    if (!m.reasoning.isNullOrBlank()) {
+                    val reasoning = m.reasoning
+                    if (!reasoning.isNullOrBlank()) {
                         Text(
                             if (showReasoning) "Hide reasoning" else "Show reasoning",
                             style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.clickable { showReasoning = !showReasoning }.padding(bottom = 4.dp),
                         )
                         AnimatedVisibility(showReasoning) {
-                            Text(m.reasoning, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 8.dp))
+                            Text(reasoning, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 8.dp))
                         }
                     }
                     when {
@@ -452,15 +453,16 @@ private fun AttachmentInspector(a: Attachment, onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         title = { Text(a.displayName) },
         text = {
+            val extracted = a.extractedText
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 Text("${a.mimeType} · ${a.sizeBytes / 1024} KB", style = MaterialTheme.typography.bodySmall)
                 when {
                     a.type == AttachmentType.IMAGE -> Text("The image (resized to at most 1568 px) is sent to models that accept image input.", modifier = Modifier.padding(top = 8.dp))
-                    a.extractedText.isNullOrBlank() -> Text("No text could be extracted from this file.", modifier = Modifier.padding(top = 8.dp))
+                    extracted.isNullOrBlank() -> Text("No text could be extracted from this file.", modifier = Modifier.padding(top = 8.dp))
                     else -> {
                         Text("This extracted text is what will be sent to the model:", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 8.dp))
-                        SelectionContainer { Text(a.extractedText.take(20_000), style = MonoStyle, modifier = Modifier.padding(top = 4.dp)) }
-                        if (a.extractedText.length > 20_000) Text("… (${a.extractedText.length} characters in total)", style = MaterialTheme.typography.bodySmall)
+                        SelectionContainer { Text(extracted.take(20_000), style = MonoStyle, modifier = Modifier.padding(top = 4.dp)) }
+                        if (extracted.length > 20_000) Text("… (${extracted.length} characters in total)", style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
