@@ -127,7 +127,7 @@ fun SettingsScreen(
         }
     }
     val importLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri != null) Platform.readText(context, uri)?.let(viewModel::import) ?: scope.launch { snackbar.showSnackbar("Could not read file.") }
+        if (uri != null) Platform.readText(context, uri)?.let(viewModel::importData) ?: scope.launch { snackbar.showSnackbar("Could not read file.") }
     }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()

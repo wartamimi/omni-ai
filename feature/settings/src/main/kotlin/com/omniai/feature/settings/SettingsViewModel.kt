@@ -57,8 +57,8 @@ class SettingsViewModel @Inject constructor(
 
     suspend fun exportAll(includeConversations: Boolean): String = exporter.exportAll(includeConversations)
 
-    fun import(raw: String) = viewModelScope.launch {
-        runCatching { exporter.import(raw) }
+    fun importData(raw: String) = viewModelScope.launch {
+        runCatching { exporter.importAll(raw) }
             .onSuccess { _messages.emit("Imported ${it.providers} providers, ${it.conversations} chats, ${it.prompts} prompts, ${it.personas} personas. Add API keys for imported providers.") }
             .onFailure { _messages.emit("Import failed: ${it.message?.take(120)}") }
     }

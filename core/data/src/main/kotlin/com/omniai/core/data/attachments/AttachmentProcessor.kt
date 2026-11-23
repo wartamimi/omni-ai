@@ -45,13 +45,7 @@ class AttachmentProcessor @Inject constructor(
     private val dir = File(context.filesDir, "attachments").apply { mkdirs() }
     private val resolver: ContentResolver get() = context.contentResolver
 
-    /** Deletes the private copy of an attachment that was picked but never sent. */
-    suspend fun discard(attachment: Attachment) = withContext(io) {
-        val f = File(attachment.localPath)
-        if (f.canonicalPath.startsWith(dir.canonicalPath)) f.delete()
-    }
-
-    suspend fun import(uri: Uri): AttachmentResult = withContext(io) {
+    suspend fun importFile(uri: Uri): AttachmentResult = withContext(io) {
         val (name, size) = queryNameAndSize(uri)
         val mime = resolver.getType(uri) ?: guessMime(name)
         if (size != null && size > MAX_INPUT_BYTES) return@withContext AttachmentResult.Unsupported("$name is larger than 25 MB.")
@@ -157,7 +151,12 @@ class AttachmentProcessor @Inject constructor(
         ImagePart(attachment.mimeType, Base64.encodeToString(f.readBytes(), Base64.NO_WRAP))
     }
 
-    suspend fun discard(attachment: Attachment) = withContext(io) { File(attachment.localPath).delete(); Unit }
+    /** Deletes the private copy of an attachment that was picked but never sent. */
+    suspend fun discard(attachment: Attachment) = withContext(io) {
+        val f = File(attachment.localPath)
+        if (f.canonicalPath.startsWith(dir.canonicalPath)) f.delete()
+        Unit
+    }
 
     /** Deletes files no longer referenced by any message. */
     suspend fun cleanOrphans(referenced: Set<String>) = withContext(io) {

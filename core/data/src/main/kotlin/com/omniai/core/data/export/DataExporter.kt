@@ -88,7 +88,7 @@ class DataExporter @Inject constructor(
         return json.encodeToString(OmniExport.serializer(), export)
     }
 
-    suspend fun import(raw: String): ImportSummary {
+    suspend fun importAll(raw: String): ImportSummary {
         val data = json.decodeFromString(OmniExport.serializer(), raw)
         require(data.format == "omniai-export") { "Not an OmniAI export file." }
         data.providers.forEach { providers.upsert(it.copy(isDefault = false)) }

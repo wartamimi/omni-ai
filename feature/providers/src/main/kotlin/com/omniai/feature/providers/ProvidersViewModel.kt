@@ -77,7 +77,7 @@ class ProvidersViewModel @Inject constructor(
 
     suspend fun exportConfiguration(): String = exporter.exportConfiguration()
     fun importConfiguration(raw: String) = viewModelScope.launch {
-        runCatching { exporter.import(raw) }
+        runCatching { exporter.importAll(raw) }
             .onSuccess { _messages.emit("Imported ${it.providers} providers. Add API keys to use them.") }
             .onFailure { _messages.emit("Import failed: ${it.message?.take(120)}") }
     }

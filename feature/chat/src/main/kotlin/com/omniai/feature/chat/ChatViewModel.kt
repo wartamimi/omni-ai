@@ -170,7 +170,7 @@ class ChatViewModel @Inject constructor(
     fun addAttachment(uri: Uri) = viewModelScope.launch {
         importing.value = true
         try {
-            when (val r = attachmentProcessor.import(uri)) {
+            when (val r = attachmentProcessor.importFile(uri)) {
                 is AttachmentResult.Ok -> _pending.update { it + r.attachment }
                 is AttachmentResult.Unsupported -> _events.emit(r.reason)
             }

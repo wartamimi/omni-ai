@@ -65,8 +65,8 @@ abstract class RepositoryModule {
 @Module
 @InstallIn(SingletonComponent::class)
 object CoroutinesModule {
-    @Provides @Dispatcher(OmniDispatcher.IO) fun io(): CoroutineDispatcher = Dispatchers.IO
-    @Provides @Dispatcher(OmniDispatcher.DEFAULT) fun default(): CoroutineDispatcher = Dispatchers.Default
+    @Provides @Dispatcher(OmniDispatcher.IO) fun ioDispatcher(): CoroutineDispatcher = Dispatchers.IO
+    @Provides @Dispatcher(OmniDispatcher.DEFAULT) fun defaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
 
     @Provides @Singleton @ApplicationScope
     fun appScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
