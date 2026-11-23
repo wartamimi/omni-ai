@@ -71,3 +71,12 @@ Each entry: the decision, why, and what it costs. Newest decisions are appended 
 23. **Single activity, Navigation Compose with type-safe routes, `NavigationSuiteScaffold`** so phones get a
     bottom bar and tablets/foldables get a rail. The bar is hidden on detail screens.
 24. **`MainActivity` extends `FragmentActivity`** because `BiometricPrompt` requires it.
+
+## Visual design (2026-11-23)
+25. **Glassmorphism without backdrop blur.** Compose has no built-in backdrop blur, so the glass look comes
+    from translucent gradient fills with a light 1 dp edge over a soft gradient background with color orbs
+    (`GlassBackground`, `Modifier.glass`, `LocalGlass`). Screen backgrounds are transparent; menus, sheets and
+    dialogs use near-opaque glass so text keeps enough contrast. A third-party blur library was considered
+    and left out to avoid an extra dependency.
+26. **Local crash reports.** Uncaught exceptions are written (redacted) to app-private storage and can be
+    viewed and shared from Settings › Advanced. Nothing is uploaded.

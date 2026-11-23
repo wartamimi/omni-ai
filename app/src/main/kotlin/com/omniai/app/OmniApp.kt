@@ -9,7 +9,10 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.ui.graphics.Color
+import com.omniai.core.designsystem.theme.LocalGlass
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -91,8 +94,15 @@ fun OmniApp(sharedText: StateFlow<String?>, onSharedTextConsumed: () -> Unit, sh
         NavigationSuiteType.None
     }
 
+    val glass = LocalGlass.current
     NavigationSuiteScaffold(
         layoutType = layoutType,
+        containerColor = Color.Transparent,
+        navigationSuiteColors = NavigationSuiteDefaults.colors(
+            navigationBarContainerColor = glass.bar,
+            navigationRailContainerColor = glass.bar,
+            navigationDrawerContainerColor = glass.bar,
+        ),
         navigationSuiteItems = {
             TopLevel.entries.forEach { t ->
                 item(

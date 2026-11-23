@@ -36,7 +36,12 @@ class SettingsViewModel @Inject constructor(
     private val exporter: DataExporter,
     private val providerManager: ProviderManager,
     val apiLog: ApiLogBuffer,
+    private val crashReporter: com.omniai.core.data.CrashReporter,
 ) : ViewModel() {
+
+    fun lastCrashReport(): String? = crashReporter.lastReport()
+    fun clearCrashReport() = crashReporter.clear()
+
 
     val settings = settingsRepository.settings.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppSettings())
     val providers = providerRepository.observeProviders().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())

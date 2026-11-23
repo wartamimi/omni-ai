@@ -9,6 +9,11 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import com.omniai.core.designsystem.theme.OmniTheme
+import com.omniai.core.designsystem.theme.GlassBackground
+import com.omniai.core.designsystem.theme.LocalGlass
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import com.omniai.core.domain.repository.SettingsRepository
 import com.omniai.core.model.AppSettings
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,7 +44,10 @@ class MainActivity : FragmentActivity() {
             if (s != null) {
                 ready = true
                 OmniTheme(themeMode = s.themeMode, accent = s.accent, dynamicColor = s.dynamicColor, textScale = s.textScale) {
-                    OmniApp(sharedText = sharedText, onSharedTextConsumed = { sharedText.value = null })
+                    Box(Modifier.fillMaxSize()) {
+                        GlassBackground(LocalGlass.current)
+                        OmniApp(sharedText = sharedText, onSharedTextConsumed = { sharedText.value = null })
+                    }
                 }
             }
         }

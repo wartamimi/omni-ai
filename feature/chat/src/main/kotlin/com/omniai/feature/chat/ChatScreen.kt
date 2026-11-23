@@ -73,6 +73,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import com.omniai.core.designsystem.theme.glass
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -151,6 +153,7 @@ fun ChatScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                colors = com.omniai.core.designsystem.component.glassTopBarColors(),
                 navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } },
                 title = {
                     Column(Modifier.clickable { showModelPicker = true }) {
@@ -305,7 +308,7 @@ private fun MessageItem(
         MessageRole.SYSTEM -> return
         MessageRole.TOOL -> {
             var open by rememberSaveable(m.id) { mutableStateOf(false) }
-            Surface(shape = RoundedCornerShape(12.dp), color = MaterialTheme.colorScheme.surfaceContainerLow, modifier = Modifier.fillMaxWidth().clickable { open = !open }) {
+            Surface(shape = RoundedCornerShape(12.dp), color = Color.Transparent, modifier = Modifier.fillMaxWidth().glass(com.omniai.core.designsystem.theme.LocalGlass.current, RoundedCornerShape(12.dp)).clickable { open = !open }) {
                 Column(Modifier.padding(10.dp)) {
                     Text("Tool result", style = MaterialTheme.typography.labelMedium)
                     if (open) Text(m.content, style = MonoStyle, modifier = Modifier.padding(top = 4.dp))
@@ -317,11 +320,14 @@ private fun MessageItem(
     }
     Column(Modifier.fillMaxWidth(), horizontalAlignment = if (isUser) Alignment.End else Alignment.Start) {
         Box {
+            val bubbleShape = RoundedCornerShape(20.dp)
+            val glass = com.omniai.core.designsystem.theme.LocalGlass.current
             Surface(
-                shape = RoundedCornerShape(18.dp),
-                color = if (isUser) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
+                shape = bubbleShape,
+                color = if (isUser) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
                 modifier = Modifier
                     .then(if (isUser) Modifier.widthIn(max = 340.dp) else Modifier.fillMaxWidth())
+                    .then(if (isUser) Modifier else Modifier.glass(glass, bubbleShape))
                     .combinedClickable(onClick = {}, onLongClick = { menu = true }, onLongClickLabel = "Message actions"),
             ) {
                 Column(Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
@@ -402,8 +408,9 @@ private fun Composer(
     onSend: () -> Unit,
     onStop: () -> Unit,
 ) {
-    Surface(tonalElevation = 2.dp) {
-        Column(Modifier.fillMaxWidth().padding(8.dp)) {
+    val glass = com.omniai.core.designsystem.theme.LocalGlass.current
+    Surface(color = Color.Transparent) {
+        Column(Modifier.fillMaxWidth().background(glass.bar).padding(8.dp)) {
             if (attachments.isNotEmpty() || importing) {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.padding(bottom = 6.dp)) {
                     items(attachments, key = { it.id }) { a -> AttachmentChip(a, onClick = { onInspect(a) }, onRemove = { onRemoveAttachment(a) }) }

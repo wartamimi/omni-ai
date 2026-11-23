@@ -66,6 +66,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -114,6 +115,7 @@ fun SettingsScreen(
     val scope = rememberCoroutineScope()
     var confirm by remember { mutableStateOf<ConfirmAction?>(null) }
     var showPicker by remember { mutableStateOf(false) }
+    var crashReport by remember { mutableStateOf<String?>(null) }
     var showRates by remember { mutableStateOf(false) }
     var diagnostics by remember { mutableStateOf<List<String>?>(null) }
     var includeChatsInExport by remember { mutableStateOf(true) }
@@ -314,6 +316,11 @@ fun SettingsScreen(
             item { SettingSwitchRow("Debug mode", s.debugMode, { v -> viewModel.update { it.copy(debugMode = v, apiLogging = v && it.apiLogging) } }) }
             item { SettingSwitchRow("API request log (redacted)", s.apiLogging, { v -> viewModel.update { it.copy(apiLogging = v) } }, subtitle = "Method, URL path, status and timing only. Kept in memory, never saved.", enabled = s.debugMode) }
             item { SettingClickRow("View API log", icon = Icons.AutoMirrored.Outlined.List, onClick = onOpenApiLog) }
+            item {
+                SettingClickRow("Last crash report", subtitle = "Stored only on this device. Share it to help fix bugs.", icon = Icons.Outlined.Description) {
+                    crashReport = viewModel.lastCrashReport() ?: ""
+                }
+            }
 
             item { Header("About") }
             item {
@@ -325,6 +332,29 @@ fun SettingsScreen(
             item { SettingClickRow("Open-source licenses", icon = Icons.Outlined.Description) { onOpenDocument(InfoDocument.LICENSES) } }
             item { SettingClickRow("Security notes", icon = Icons.Outlined.Policy) { onOpenDocument(InfoDocument.SECURITY) } }
         }
+    }
+
+    crashReport?.let { report ->
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { crashReport = null },
+            title = { Text("Last crash report") },
+            text = {
+                if (report.isBlank()) Text("No crash has been recorded.")
+                else androidx.compose.foundation.text.selection.SelectionContainer {
+                    Text(
+                        report.take(8_000), style = com.omniai.core.designsystem.theme.MonoStyle,
+                        modifier = Modifier.verticalScroll(androidx.compose.foundation.rememberScrollState()),
+                    )
+                }
+            },
+            confirmButton = {
+                if (report.isNotBlank()) androidx.compose.material3.TextButton(onClick = { Platform.shareText(context, report, "OmniAI crash report") }) { Text("Share") }
+                else androidx.compose.material3.TextButton(onClick = { crashReport = null }) { Text("Close") }
+            },
+            dismissButton = {
+                if (report.isNotBlank()) androidx.compose.material3.TextButton(onClick = { viewModel.clearCrashReport(); crashReport = null }) { Text("Delete") }
+            },
+        )
     }
 
     if (showPicker) {

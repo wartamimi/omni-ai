@@ -65,6 +65,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.omniai.core.designsystem.theme.LocalStatusColors
+import com.omniai.core.designsystem.theme.glass
 import kotlin.math.absoluteValue
 
 enum class StatusTone { SUCCESS, WARNING, DANGER, NEUTRAL, ACCENT }
@@ -91,7 +92,10 @@ fun OmniCard(
     contentPadding: Dp = 16.dp,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+    val glass = com.omniai.core.designsystem.theme.LocalGlass.current
+    val shape = MaterialTheme.shapes.large
+    val colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+    val glassModifier = modifier.fillMaxWidth().then(Modifier.glass(glass, shape))
     val body: @Composable ColumnScope.() -> Unit = {
         Column(Modifier.padding(contentPadding), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             if (title != null || trailing != null) {
@@ -106,9 +110,9 @@ fun OmniCard(
         }
     }
     if (onClick != null) {
-        Card(onClick = onClick, modifier = modifier.fillMaxWidth(), colors = colors, shape = MaterialTheme.shapes.large, content = body)
+        Card(onClick = onClick, modifier = glassModifier, colors = colors, shape = shape, content = body)
     } else {
-        Card(modifier = modifier.fillMaxWidth(), colors = colors, shape = MaterialTheme.shapes.large, content = body)
+        Card(modifier = glassModifier, colors = colors, shape = shape, content = body)
     }
 }
 
@@ -200,7 +204,7 @@ fun MetaPill(text: String, modifier: Modifier = Modifier, emphasized: Boolean = 
 @Composable
 fun ProviderAvatar(name: String, emoji: String? = null, size: Dp = 40.dp) {
     val hues = listOf(0xFF7C83FF, 0xFF2DD4BF, 0xFFFBBF24, 0xFFFB7185, 0xFF38BDF8, 0xFFA78BFA, 0xFF34D399, 0xFFF97316)
-    val color = Color(hues[name.hashCode().absoluteValue % hues.size])
+    val color = Color(hues[Math.floorMod(name.hashCode(), hues.size)])
     Box(
         Modifier.size(size).clip(RoundedCornerShape(size / 3.2f)).background(color.copy(alpha = 0.18f)),
         contentAlignment = Alignment.Center,

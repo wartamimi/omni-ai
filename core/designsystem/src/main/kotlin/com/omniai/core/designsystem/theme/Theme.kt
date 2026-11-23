@@ -76,11 +76,38 @@ fun OmniTheme(
     } else {
         StatusColors(Color(0xFF15803D), Color(0xFFB45309), Color(0xFFC62828), Color(0xFF5B6475))
     }
+    val glass = glassStyle(dark, if (dynamicColor) scheme.primary else Color(accent.argb))
+    val glassScheme = scheme.toGlass(glass)
     val density = LocalDensity.current
     CompositionLocalProvider(
+        LocalGlass provides glass,
         LocalStatusColors provides status,
         LocalDensity provides Density(density.density, density.fontScale * textScale),
     ) {
-        MaterialTheme(colorScheme = scheme, typography = OmniTypography, shapes = OmniShapes, content = content)
+        MaterialTheme(colorScheme = glassScheme, typography = OmniTypography, shapes = OmniShapes, content = content)
     }
+}
+
+/**
+ * Adapts a color scheme to the glass design: screen backgrounds become transparent so the
+ * [GlassBackground] shows through, low containers become translucent, and containers used by
+ * menus, sheets and dialogs stay nearly opaque for legibility.
+ */
+private fun androidx.compose.material3.ColorScheme.toGlass(glass: GlassStyle): androidx.compose.material3.ColorScheme {
+    val solid = if (glass.isDark) Color(0xFF14162A) else Color(0xFFFBFBFF)
+    val tint = if (glass.isDark) Color.White else Color(0xFF1E1B4B)
+    return copy(
+        background = Color.Transparent,
+        surface = Color.Transparent,
+        surfaceVariant = tint.copy(alpha = 0.08f),
+        primaryContainer = primary.copy(alpha = if (glass.isDark) 0.30f else 0.20f),
+        secondaryContainer = primary.copy(alpha = if (glass.isDark) 0.22f else 0.16f),
+        surfaceContainerLowest = solid.copy(alpha = 0.90f),
+        surfaceContainerLow = solid.copy(alpha = 0.94f),
+        surfaceContainer = solid.copy(alpha = 0.96f),
+        surfaceContainerHigh = solid.copy(alpha = 0.97f),
+        surfaceContainerHighest = tint.copy(alpha = if (glass.isDark) 0.12f else 0.08f),
+        outlineVariant = tint.copy(alpha = 0.14f),
+        surfaceTint = Color.Transparent,
+    )
 }
